@@ -17,3 +17,8 @@ A spicetify extension to replicate the console version of spotify fullscreen. Fo
 # Previews
 ![image](https://user-images.githubusercontent.com/50198413/140684027-120ba67f-f100-4582-9b6d-91c3df1e2d25.png)
 ![image](https://user-images.githubusercontent.com/50198413/140684070-463f17bd-a6ef-46cd-870c-a29ce3a96591.png)
+
+# Usage 
+- To go fullscreen either click the double arrow in the top left or press f11
+- To exit fullscreen either double click anywhere or press f11
+- Right Click on fullscreen to access settings.
