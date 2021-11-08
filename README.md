@@ -1,5 +1,5 @@
 # Spicetify-Fullscreen-Canvas
-A spicetify extension to replicate the console version of spotify fullscreen. Fork of https://github.com/khanhas/spicetify-cli/blob/master/Extensions/fullAppDisplay.js
+A spicetify extension to replicate the console version of spotify fullscreen. Fork of https://github.com/khanhas/spicetify-cli/blob/master/Extensions/fullAppDisplay.js. Scroll to [Previews](/#previews) to see preview.
 
 # Previews
 ![image](https://user-images.githubusercontent.com/50198413/140684027-120ba67f-f100-4582-9b6d-91c3df1e2d25.png)
