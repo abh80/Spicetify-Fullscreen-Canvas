@@ -1,7 +1,7 @@
 Write-Output "Downloading File..."
 Invoke-WebRequest https://raw.githubusercontent.com/abh80/Spicetify-Fullscreen-Canvas/main/spotifyFullscreenCanvas.js -OutFile $env:USERPROFILE\.spicetify\Extensions\spotifyFullscreenCanvas.js
 
-if (Get-Command $cmdName -errorAction SilentlyContinue)
+if (Get-Command spicetify -errorAction SilentlyContinue)
 {
  Invoke-Expression "spicetify config extensions spotifyFullscreenCanvas.js"
  Invoke-Expression "spicetify apply"
