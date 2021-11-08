@@ -1,6 +1,11 @@
 # Spicetify-Fullscreen-Canvas
 A spicetify extension to replicate the console version of spotify fullscreen. Fork of https://github.com/khanhas/spicetify-cli/blob/master/Extensions/fullAppDisplay.js. Scroll to [Previews](#previews) to see preview.
 
+# Automatic Installation (Windows Only)
+- Open Powershell
+- and run `Invoke-Webrequest https://raw.githubusercontent.com/abh80/Spicetify-Fullscreen-Canvas/main/Install.ps1 | Invoke-Expression`
+- Enjoy the extension! :)
+
 # Manual Installtion
 - Make sure you have Spicetify CLI install. [Learn More](https://github.com/khanhas/spicetify-cli)
 - To install save the file [spotifyFullscreenCanvas.js](https://github.com/abh80/Spicetify-Fullscreen-Canvas/blob/main/spotifyFullscreenCanvas.js)
