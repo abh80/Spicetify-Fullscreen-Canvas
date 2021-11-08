@@ -1,14 +1,9 @@
 Write-Output "Downloading File..."
 Invoke-WebRequest https://raw.githubusercontent.com/abh80/Spicetify-Fullscreen-Canvas/main/spotifyFullscreenCanvas.js -OutFile $env:USERPROFILE\.spicetify\Extensions\spotifyFullscreenCanvas.js
 
-if ([bool](Get-Command spicetify -errorAction SilentlyContinue))
+if (![bool](Get-Command spicetify -errorAction SilentlyContinue))
 {
- Invoke-Expression "spicetify config extensions spotifyFullscreenCanvas.js"
- Invoke-Expression "spicetify apply"
-}
-else {
-
-    Write-Output "Spicetify not found!"
+ Write-Output "Spicetify not found!"
     $answer = Read-Host -Prompt "Install Spicetify? (y/n)"
     if ($answer -eq "y") {
         Write-Output "Installing Spicetify..."
@@ -20,4 +15,5 @@ else {
         exit 0
     }
 }
-
+ Invoke-Expression "spicetify config extensions spotifyFullscreenCanvas.js"
+ Invoke-Expression "spicetify apply"
