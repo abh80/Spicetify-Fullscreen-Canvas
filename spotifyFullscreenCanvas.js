@@ -1,6 +1,6 @@
 // @ts-check
-// NAME: Full App Display
-// AUTHOR: khanhas
+// NAME: Spotify FullScreen Canvas
+// AUTHOR: abh80
 // VERSION: 1.0
 // DESCRIPTION: Fancy artwork and track status display.
 
@@ -107,6 +107,18 @@ body.video-full-screen.video-full-screen--hide-ui {
 #fad-status-controls {
   transition : all 0.5s ease-in-out;
 }
+.top-fragment {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding-top: 50px;
+  padding-left: 90px;
+  display:flex;
+  gap:15px;
+}
+
 `;
 
   const styleChoices = [
@@ -154,6 +166,9 @@ body.video-full-screen.video-full-screen--hide-ui {
     display: flex;
     margin-right: 10px;
 }
+#fac-controls button {
+  cursor : pointer;
+}
 #fad-elapsed {
     min-width: 52px;
 }`,
@@ -195,10 +210,14 @@ body.video-full-screen.video-full-screen--hide-ui {
 #fad-status.active {
     margin: 20px auto 0;
 }
+#fac-controls button {
+  cursor : pointer;
+}
 #fad-controls {
     margin-top: 20px;
     order: 2
 }
+
 #fad-elapsed {
     min-width: 56px;
     margin-right: 10px;
@@ -242,6 +261,14 @@ body.video-full-screen.video-full-screen--hide-ui {
     container.innerHTML = `
 <canvas id="fad-background"></canvas>
 <div id="fad-header"></div>
+<div class="top-fragment">
+<div style="width:50px;height: 50px">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1333.33 1333.3" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"><path d="M666.66 0C298.48 0 0 298.47 0 666.65c0 368.19 298.48 666.65 666.66 666.65 368.22 0 666.67-298.45 666.67-666.65C1333.33 298.49 1034.88.03 666.65.03l.01-.04zm305.73 961.51c-11.94 19.58-37.57 25.8-57.16 13.77-156.52-95.61-353.57-117.26-585.63-64.24-22.36 5.09-44.65-8.92-49.75-31.29-5.12-22.37 8.84-44.66 31.26-49.75 253.95-58.02 471.78-33.04 647.51 74.35 19.59 12.02 25.8 37.57 13.77 57.16zm81.6-181.52c-15.05 24.45-47.05 32.17-71.49 17.13-179.2-110.15-452.35-142.05-664.31-77.7-27.49 8.3-56.52-7.19-64.86-34.63-8.28-27.49 7.22-56.46 34.66-64.82 242.11-73.46 543.1-37.88 748.89 88.58 24.44 15.05 32.16 47.05 17.12 71.46V780zm7.01-189.02c-214.87-127.62-569.36-139.35-774.5-77.09-32.94 9.99-67.78-8.6-77.76-41.55-9.98-32.96 8.6-67.77 41.56-77.78 235.49-71.49 626.96-57.68 874.34 89.18 29.69 17.59 39.41 55.85 21.81 85.44-17.52 29.63-55.89 39.4-85.42 21.8h-.03z" fill="#fff" fill-rule="nonzero"/></svg>
+</div>
+<div style="font-weight: var(--glue-font-weight-bold);line-height: 50px;font-size:20px">
+Playing from <span id="top-frag-title"></span>
+</div>
+</div>
 <div id="fad-foreground">
 <div style="display:flex">
     <div id="fad-art">
@@ -273,30 +300,24 @@ body.video-full-screen.video-full-screen--hide-ui {
  <div id="fad-status" class="${
    CONFIG.enableControl || CONFIG.enableProgress ? "active" : ""
  }">
-            ${
-              CONFIG.enableProgress
-                ? `
+            
             <div id="fad-progress-container">
                 <span id="fad-elapsed"></span>
                 <div id="fad-progress"><div id="fad-progress-inner"></div></div>
                 <span id="fad-duration"></span>
-            </div>`
-                : ""
-            }
+            </div>
+              
         </div>
-        ${
-          CONFIG.enableControl
-            ? `
+        
         <div id="fad-controls">
-            ${
-              CONFIG.vertical
-                ? `<button id="fad-back">
+            
+             
+                 <button id="fad-back">
                 <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor">
                     ${Spicetify.SVGIcons["skip-back"]}
                 </svg>
-            </button>`
-                : ""
-            }
+            </button>
+                
             <button id="fad-play">
                 <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor">
                     ${Spicetify.SVGIcons.play}
@@ -307,11 +328,7 @@ body.video-full-screen.video-full-screen--hide-ui {
                     ${Spicetify.SVGIcons["skip-forward"]}
                 </svg>
             </button>
-        </div></div>`
-            : ""
-        }
-
-</div>`;
+        </div></div></div>`;
 
     back = container.querySelector("canvas");
     back.width = window.innerWidth;
@@ -331,9 +348,8 @@ body.video-full-screen.video-full-screen--hide-ui {
       play = container.querySelector("#fad-play");
       play.onclick = Spicetify.Player.togglePlay;
       container.querySelector("#fad-next").onclick = Spicetify.Player.next;
-      if (CONFIG.vertical) {
-        container.querySelector("#fad-back").onclick = Spicetify.Player.back;
-      }
+
+      container.querySelector("#fad-back").onclick = Spicetify.Player.back;
     }
   }
 
@@ -352,11 +368,14 @@ body.video-full-screen.video-full-screen--hide-ui {
   }
   function getArtistInfo(uri) {
     return Spicetify.CosmosAsync.get(
-      `https://api.spotify.com/v1/artists/${uri.replace("spotify:artist:", "")}`
+      "https://api-partner.spotify.com/pathfinder/v1/query?operationName=queryArtistOverview&variables=%7B%22uri%22%3A%22spotify%3Aartist%3A" +
+        uri.replace("spotify:artist:", "") +
+        "%22%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%22d66221ea13998b2f81883c5187d174c8646e4041d67f5b1e103bc262d447e3a0%22%7D%7D"
     );
   }
   async function updateInfo() {
     const meta = Spicetify.Player.data.track.metadata;
+
     const artistInfo = await getArtistInfo(
       Spicetify.Player.data.track.metadata.artist_uri
     );
@@ -420,12 +439,14 @@ body.video-full-screen.video-full-screen--hide-ui {
     if (CONFIG.enableProgress) {
       durationText = Spicetify.Player.formatTime(meta.duration);
     }
-
+    document.querySelector("#top-frag-title").textContent =
+      meta.album_title || "Tracks";
     // Wait until next track image is downloaded then update UI text and images
 
     nextTrackImg.src = meta.image_xlarge_url;
     const previousImg = artistImage.cloneNode();
-    artistImage.src = artistInfo.images[0].url;
+    console.log(artistInfo.data);
+    artistImage.src = artistInfo.data.artist.visuals.headerImage.sources[0].url;
 
     artistImage.onload = () => {
       animateCanvas(previousImg, artistImage);
@@ -457,39 +478,20 @@ body.video-full-screen.video-full-screen--hide-ui {
 
     const ctx = back.getContext("2d");
     ctx.imageSmoothingEnabled = false;
-    ctx.filter = `blur(5px) brightness(0.6)`;
-    const blur = 5;
+    ctx.filter = `brightness(0.6)`;
 
     if (!CONFIG.enableFade) {
       ctx.globalAlpha = 1;
-      ctx.drawImage(
-        nextImg,
-        -blur * 2,
-        -blur * 2 - (width - height) / 2,
-        dim + 4 * blur,
-        dim + 4 * blur
-      );
+      ctx.drawImage(nextImg, 0, 0, width, height);
       return;
     }
 
     let factor = 0.0;
     const animate = () => {
       ctx.globalAlpha = 1;
-      ctx.drawImage(
-        prevImg,
-        -blur * 2,
-        -blur * 2 - (width - height) / 2,
-        dim + 4 * blur,
-        dim + 4 * blur
-      );
+      ctx.drawImage(prevImg, 0, 0, width, height);
       ctx.globalAlpha = Math.sin((Math.PI / 2) * factor);
-      ctx.drawImage(
-        nextImg,
-        -blur * 2,
-        -blur * 2 - (width - height) / 2,
-        dim + 4 * blur,
-        dim + 4 * blur
-      );
+      ctx.drawImage(nextImg, 0, 0, width, height);
 
       if (factor < 1.0) {
         factor += 0.016;
