@@ -474,24 +474,31 @@ Playing from <span id="top-frag-title"></span>
     const { innerWidth: width, innerHeight: height } = window;
     back.width = width;
     back.height = height;
-    const dim = width > height ? width : height;
-
     const ctx = back.getContext("2d");
     ctx.imageSmoothingEnabled = false;
+    const center_X = width / 2;
+    const center_Y = height / 2;
+    const img_center_X = nextImg.width / 2;
+    const img_center_Y = nextImg.height / 2;
     ctx.filter = `brightness(0.6)`;
-
-    if (!CONFIG.enableFade) {
-      ctx.globalAlpha = 1;
-      ctx.drawImage(nextImg, 0, 0, width, height);
-      return;
-    }
-
     let factor = 0.0;
-    const animate = () => {
+    let animate = () => {
       ctx.globalAlpha = 1;
-      ctx.drawImage(prevImg, 0, 0, width, height);
+      ctx.drawImage(
+        prevImg,
+        width > prevImg.width ? 0 : -(img_center_X - center_X),
+        height > prevImg.height ? 0 : -(img_center_Y - center_Y),
+        width > prevImg.width ? width : prevImg.width,
+        height > prevImg.height ? height : prevImg.height
+      );
       ctx.globalAlpha = Math.sin((Math.PI / 2) * factor);
-      ctx.drawImage(nextImg, 0, 0, width, height);
+      ctx.drawImage(
+        nextImg,
+        width > nextImg.width ? 0 : -(img_center_X - center_X),
+        height > nextImg.height ? 0 : -(img_center_Y - center_Y),
+        width > nextImg.width ? width : nextImg.width,
+        height > nextImg.height ? height : nextImg.height
+      );
 
       if (factor < 1.0) {
         factor += 0.016;
