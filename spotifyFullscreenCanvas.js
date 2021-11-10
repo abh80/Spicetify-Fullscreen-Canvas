@@ -1,7 +1,7 @@
 // @ts-check
 // NAME: Spotify FullScreen Canvas
-// AUTHOR: abh80
-// VERSION: 1.0
+// AUTHOR: abh80 originally khanhas
+// VERSION: 1.5
 // DESCRIPTION: Fancy artwork and track status display.
 
 /// <reference path="./global.d.ts" />
@@ -12,7 +12,7 @@
     return;
   }
   const version = "1.0";
-
+  let shouldProgressUpdate = true;
   async function checkForUpdate() {
     const releasesLink =
       "https://api.github.com/repos/abh80/Spicetify-Fullscreen-Canvas/releases";
@@ -59,6 +59,7 @@
     align-items: center;
     justify-content: center;
 }
+
 #fad-art-image {
     position: relative;
     width: 100%;
@@ -92,12 +93,7 @@
     background-color: #ffffff50;
     overflow: hidden;
 }
-#fad-progress-inner {
-    height: 100%;
-    border-radius: 6px;
-    background-color: #ffffff;
-    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.8);
-}
+
 #fad-duration {
     margin-left: 10px;
 }
@@ -136,7 +132,9 @@ body.video-full-screen.video-full-screen--hide-ui {
   display:flex;
   gap:15px;
 }
-
+.slider {
+  width: 100%;
+}
 `;
 
   const styleChoices = [
@@ -321,7 +319,7 @@ Playing from <span id="top-frag-title"></span>
             
             <div id="fad-progress-container">
                 <span id="fad-elapsed"></span>
-                <div id="fad-progress"><div id="fad-progress-inner"></div></div>
+                <input id="fad-progress-inner" type="range" min="1" max="100" class="slider"/>
                 <span id="fad-duration"></span>
             </div>
               
@@ -356,12 +354,18 @@ Playing from <span id="top-frag-title"></span>
     artist = container.querySelector("#fad-artist span");
     album = container.querySelector("#fad-album span");
 
-    if (CONFIG.enableProgress) {
-      prog = container.querySelector("#fad-progress-inner");
-      durr = container.querySelector("#fad-duration");
-      elaps = container.querySelector("#fad-elapsed");
-    }
+    prog = container.querySelector("#fad-progress-inner");
+    durr = container.querySelector("#fad-duration");
+    elaps = container.querySelector("#fad-elapsed");
+    prog.onchange = function (e) {
+      shouldProgressUpdate = true;
 
+      var val = e.target.value;
+      Spicetify.Player.seek(val / 100);
+    };
+    prog.oninput = function () {
+      shouldProgressUpdate = false;
+    };
     if (CONFIG.enableControl) {
       play = container.querySelector("#fad-play");
       play.onclick = Spicetify.Player.togglePlay;
@@ -528,9 +532,18 @@ Playing from <span id="top-frag-title"></span>
   }
 
   function updateProgress(event) {
-    prog.style.width =
-      (event.data / Spicetify.Player.origin._state.duration) * 100 + "%";
     elaps.innerText = Spicetify.Player.formatTime(event.data);
+    if (!shouldProgressUpdate) return;
+    prog.value = (event.data / Spicetify.Player.origin._state.duration) * 100;
+    var valPercent =
+      (prog.valueAsNumber - parseInt(prog.min)) /
+      (parseInt(prog.max) - parseInt(prog.min));
+    prog.style.background =
+      "linear-gradient(to right, var(--spice-button) 0%, var(--spice-button) " +
+      prog.value +
+      "%, transparent " +
+      prog.value +
+      "%, transparent 100%)";
   }
 
   function updateControl({ data }) {
