@@ -1,6 +1,5 @@
 Write-Output "Downloading File..."
 Write-Output ""
-Invoke-WebRequest https://raw.githubusercontent.com/abh80/Spicetify-Fullscreen-Canvas/main/spotifyFullscreenCanvas.js -OutFile $env:USERPROFILE\.spicetify\Extensions\spotifyFullscreenCanvas.js
 
 if (![bool](Get-Command spicetify -errorAction SilentlyContinue)) {
     Write-Output "Spicetify not found!"
@@ -16,6 +15,14 @@ if (![bool](Get-Command spicetify -errorAction SilentlyContinue)) {
         exit 0
     }
 }
+
+if (Test-Path $env:USERPROFILE\.spicetify\Extensions\spotifyFullscreenCanvas.js) {
+    Remove-Item $env:USERPROFILE\.spicetify\Extensions\spotifyFullscreenCanvas.js -Force -Recurse -ErrorAction SilentlyContinue
+} 
+
+Invoke-WebRequest https://raw.githubusercontent.com/abh80/Spicetify-Fullscreen-Canvas/main/spotifyFullscreenCanvas.js -OutFile $env:USERPROFILE\.spicetify\Extensions\spotifyFullscreenCanvas.js
+
+
 Invoke-Expression "spicetify config extensions spotifyFullscreenCanvas.js"
 Invoke-Expression "spicetify apply"
 
