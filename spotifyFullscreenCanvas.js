@@ -11,7 +11,25 @@
     setTimeout(FullAppDisplay, 200);
     return;
   }
+  const version = "1.0";
 
+  async function checkForUpdate() {
+    const releasesLink =
+      "https://api.github.com/repos/abh80/Spicetify-Fullscreen-Canvas/releases";
+    const response = await fetch(releasesLink);
+    const releases = await response.json();
+    const latestRelease = releases[0];
+    const latestVersion = latestRelease.tag_name;
+    if (parseFloat(version) < parseFloat(latestVersion)) {
+      Spicetify.showNotification(
+        "An update is available for Spicetify Fullscreen Canvas!"
+      );
+      document.querySelector(".main-topBar-historyButtons").innerHTML +=
+        "<a href=" +
+        `"https://github.com/abh80/Spicetify-Fullscreen-Canvas/releases/${latestVersion}">Update!</a>`;
+    }
+  }
+  checkForUpdate();
   const CONFIG = getConfig();
 
   const style = document.createElement("style");
