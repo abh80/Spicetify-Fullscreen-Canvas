@@ -11,7 +11,7 @@
     setTimeout(FullAppDisplay, 200);
     return;
   }
-  const version = "1.0";
+  const version = "1.5";
   let shouldProgressUpdate = true;
   async function checkForUpdate() {
     const releasesLink =
