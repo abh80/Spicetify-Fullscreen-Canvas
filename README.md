@@ -15,7 +15,7 @@ A spicetify extension to replicate the console version of spotify fullscreen. Fo
 
 
 # Previews
-![image](https://user-images.githubusercontent.com/50198413/140872808-620ad544-7a8a-4b56-9c37-bb04c69ccd0c.png)
+![image](https://user-images.githubusercontent.com/50198413/141055119-22e98f1f-645d-4ee3-a24d-b4192a0a8eef.png)
 ![image](https://user-images.githubusercontent.com/50198413/140872897-7b944ac1-40ba-49f9-b541-5650ef109fb1.png)
 
 # Usage 
