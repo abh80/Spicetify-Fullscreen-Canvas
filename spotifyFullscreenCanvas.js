@@ -1,7 +1,7 @@
-// @ts-check
+// @ts-ignore
 // NAME: Spotify FullScreen Canvas
 // AUTHOR: abh80 originally khanhas
-// VERSION: 1.5
+// VERSION: 2.0
 // DESCRIPTION: Fancy artwork and track status display.
 
 /// <reference path="./global.d.ts" />
@@ -11,7 +11,8 @@
     setTimeout(FullAppDisplay, 200);
     return;
   }
-  const version = "1.5";
+  let LYRICS = null;
+  const version = "2.0";
   let shouldProgressUpdate = true;
   async function checkForUpdate() {
     const releasesLink =
@@ -46,6 +47,14 @@
     top: 0;
     opacity: 0;
     transition : opacity 0.5s ease-in-out;
+}
+.lyrics_holder {
+    position: absolute;
+    top: 50%;
+    width : 100%;
+    font-size : 25px;
+    text-align : center;
+    font-weight : 700;
 }
 #fad-header {
     position: fixed;
@@ -285,6 +294,7 @@ body.video-full-screen.video-full-screen--hide-ui {
 Playing from <span id="top-frag-title"></span>
 </div>
 </div>
+<div class="lyrics_holder"></div>
 <div id="fad-foreground">
 <div style="display:flex">
     <div id="fad-art">
@@ -395,12 +405,65 @@ Playing from <span id="top-frag-title"></span>
         "%22%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%22d66221ea13998b2f81883c5187d174c8646e4041d67f5b1e103bc262d447e3a0%22%7D%7D"
     );
   }
+  function buildMusixMatchLink(uri, name, artist, album) {
+    const musixmatchURI =
+      "https://apic-desktop.musixmatch.com/ws/1.1/macro.subtitles.get?format=json&namespace=lyrics_synched&part=lyrics_crowd,user,lyrics_verified_by&q_album=" +
+      album +
+      "&q_artist=" +
+      artist +
+      "&q_artists=" +
+      artist +
+      "&q_track=" +
+      name +
+      "&tags=nowplaying&userblob_id=b2ggbXkgZ29kX2FsZWMgYmVuamFtaW5fMTg3&user_language=en&track_spotify_id=" +
+      uri +
+      "&subtitle_format=mxm&app_id=web-desktop-app-v1.0&usertoken=" +
+      TOKEN;
+    return musixmatchURI;
+  }
   async function updateInfo() {
     const meta = Spicetify.Player.data.track.metadata;
 
     const artistInfo = await getArtistInfo(
       Spicetify.Player.data.track.metadata.artist_uri
     );
+    try {
+      if (
+        CONFIG.enableLyrics &&
+        (!LYRICS || LYRICS.uri != Spicetify.Player.data.track.uri)
+      ) {
+        const data = await Spicetify.CosmosAsync.get(
+          buildMusixMatchLink(
+            Spicetify.Player.data.track.uri,
+            meta.title,
+            meta.artist_name,
+            meta.album_title
+          ),
+          null,
+          {
+            authority: "apic-desktop.musixmatch.com",
+            cookie: "x-mxm-token-guid=",
+          }
+        );
+        if (
+          !data.message.body.macro_calls["track.subtitles.get"].message.body
+            .subtitle_list
+        )
+          return;
+        LYRICS = {
+          uri: Spicetify.Player.data.track.uri,
+          lyrics: JSON.parse(
+            data.message.body.macro_calls["track.subtitles.get"].message.body
+              .subtitle_list[0].subtitle.subtitle_body
+          ),
+        };
+      }
+    } catch {
+      Spicetify.showNotification(
+        "Error while fetching lyrics, please read the documentation."
+      );
+      LYRICS = null;
+    }
     // prepare title
     let rawTitle = meta.title;
     if (CONFIG.trimTitle) {
@@ -535,15 +598,28 @@ Playing from <span id="top-frag-title"></span>
     elaps.innerText = Spicetify.Player.formatTime(event.data);
     if (!shouldProgressUpdate) return;
     prog.value = (event.data / Spicetify.Player.origin._state.duration) * 100;
-    var valPercent =
-      (prog.valueAsNumber - parseInt(prog.min)) /
-      (parseInt(prog.max) - parseInt(prog.min));
+
     prog.style.background =
       "linear-gradient(to right, var(--spice-button) 0%, var(--spice-button) " +
       prog.value +
       "%, transparent " +
       prog.value +
       "%, transparent 100%)";
+
+    if (
+      CONFIG.enableLyrics &&
+      LYRICS &&
+      LYRICS.uri == Spicetify.Player.data.track.uri
+    ) {
+      const ly = LYRICS.lyrics;
+      let m = ly.map((x) => x.time.total);
+      var t = m.sort(
+        (a, b) =>
+          Math.abs(event.data / 1000 - a) - Math.abs(event.data / 1000 - b)
+      )[0];
+      let lyric = ly.find((x) => x.time.total === t).text;
+      document.querySelector(".lyrics_holder").textContent = lyric || "...";
+    }
   }
 
   function updateControl({ data }) {
@@ -718,7 +794,11 @@ button.switch.disabled {
         newMenuItem("Show icons", "icons"),
         newMenuItem("Vertical mode", "vertical"),
         newMenuItem("Enable fullscreen", "enableFullscreen"),
-        newMenuItem("Enable song change animation", "enableFade")
+        newMenuItem("Enable song change animation", "enableFade"),
+        newMenuItem(
+          "Enable lyrics (requires configuration during installation)",
+          "enableLyrics"
+        )
       );
     }
     Spicetify.PopupModal.display({
