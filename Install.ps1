@@ -1,3 +1,5 @@
+param($mtoken)
+
 Write-Output "Downloading File..."
 Write-Output ""
 
@@ -22,7 +24,9 @@ if (Test-Path $env:USERPROFILE\.spicetify\Extensions\spotifyFullscreenCanvas.js)
 
 Invoke-WebRequest https://raw.githubusercontent.com/abh80/Spicetify-Fullscreen-Canvas/main/spotifyFullscreenCanvas.js -OutFile $env:USERPROFILE\.spicetify\Extensions\spotifyFullscreenCanvas.js
 
-
+if ($mtoken){
+    Add-Content $env:USERPROFILE\.spicetify\Extensions\spotifyFullscreenCanvas.js "var TOKEN = '$mtoken';"
+}
 Invoke-Expression "spicetify config extensions spotifyFullscreenCanvas.js"
 Invoke-Expression "spicetify apply"
 
