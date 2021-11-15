@@ -17,6 +17,16 @@ A spicetify extension to replicate the console version of spotify fullscreen. Fo
 # Previews
 ![image](https://user-images.githubusercontent.com/50198413/141055119-22e98f1f-645d-4ee3-a24d-b4192a0a8eef.png)
 ![image](https://user-images.githubusercontent.com/50198413/140872897-7b944ac1-40ba-49f9-b541-5650ef109fb1.png)
+![image](https://user-images.githubusercontent.com/50198413/141737822-defe4ca8-791a-4ba4-923e-950f2c551807.png)
+
+# Lyrics Info
+To enable lyrics we need to configure it during installation.
+
+- Firstly open up the powershell
+- now save the script by running `Invoke-Webrequest https://raw.githubusercontent.com/abh80/Spicetify-Fullscreen-Canvas/main/Install.ps1 -Outfile install.ps1`
+- atlast run the run the script `./install.ps1 -mtoken <your musixmatch token here` ([learn how to get musixmatch token here](https://github.com/khanhas/genius-spicetify/#musicxmatch))
+- Optional! remove the script as its no longer needed `Remove-Item install.ps1`
+
 
 # Usage 
 - To go fullscreen either click the double arrow in the top left or press f11
