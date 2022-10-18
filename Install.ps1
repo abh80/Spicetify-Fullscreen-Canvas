@@ -17,15 +17,15 @@ if (![bool](Get-Command spicetify -errorAction SilentlyContinue)) {
         exit 0
     }
 }
-
-if (Test-Path $env:USERPROFILE\.spicetify\Extensions\spotifyFullscreenCanvas.js) {
-    Remove-Item $env:USERPROFILE\.spicetify\Extensions\spotifyFullscreenCanvas.js -Force -Recurse -ErrorAction SilentlyContinue
+$spicetify_path = spicetify -c | Split-Path
+if (Test-Path $spicetify_path\Extensions\spotifyFullscreenCanvas.js) {
+    Remove-Item $spicetify_path\Extensions\spotifyFullscreenCanvas.js -Force -Recurse -ErrorAction SilentlyContinue
 } 
 
-Invoke-WebRequest https://raw.githubusercontent.com/abh80/Spicetify-Fullscreen-Canvas/main/spotifyFullscreenCanvas.js -OutFile $env:USERPROFILE\.spicetify\Extensions\spotifyFullscreenCanvas.js
+Invoke-WebRequest https://raw.githubusercontent.com/abh80/Spicetify-Fullscreen-Canvas/main/spotifyFullscreenCanvas.js -OutFile $spicetify_path\Extensions\spotifyFullscreenCanvas.js
 
-if ($mtoken){
-    Add-Content $env:USERPROFILE\.spicetify\Extensions\spotifyFullscreenCanvas.js "var TOKEN = '$mtoken';"
+if ($mtoken) {
+    Add-Content $spicetify_path\Extensions\spotifyFullscreenCanvas.js "var TOKEN = '$mtoken';"
 }
 Invoke-Expression "spicetify config extensions spotifyFullscreenCanvas.js"
 Invoke-Expression "spicetify apply"
@@ -34,7 +34,7 @@ Write-Output ""
 Write-Output "Done!"
 $answer = Read-Host -Prompt "Remove Ads? (y/N) "
 if ($answer -eq "y") {
-    Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/mrpond/BlockTheSpot/master/install.ps1' | Invoke-Expression
+    Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/SpotX-CLI/SpotX-Win/main/Install.ps1' | Invoke-Expression
 }
 Write-Output ""
 Write-Output "Thanks for installing Spicetify Fullscreen Canvas!"
